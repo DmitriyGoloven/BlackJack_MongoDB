@@ -1,0 +1,8 @@
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map
+client/node_modules
+server/node_modules
+
+.idea
