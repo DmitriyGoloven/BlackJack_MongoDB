@@ -16,6 +16,7 @@ const getGameController = (ctx) => {
 }
 
 const hitGameController = (ctx) => {
+    // console.log(ctx.state.game)
     ctx.state.game.hit();
     ctx.body = ctx.state.game;
 }
@@ -29,14 +30,13 @@ const restartGameController = (ctx) => {
     let players = ctx.state.game.players
     const session = ctx.state.session
     let game = new Game(players.map((player) => new Player(player.name)))
-    console.log(game.players)
     ctx.state.game = game;
     games[session.id] = ctx.state.game;
     ctx.body = ctx.state.game;
 }
 
 const checkTokenMiddleware = (ctx, next) => {
-    console.log(ctx.headers)
+    // console.log(ctx.headers)
     const token = ctx.header.authorization
 
     if (!token) {
@@ -79,6 +79,7 @@ const login = (ctx) => {
     const session = {id: uuidv4()};
     const token = jwt.sign(session, 'MyGame');
     const game = new Game(players.map((name) => new Player(name)))
+
     games[session.id] = game
 
     ctx.body = {game, token}
