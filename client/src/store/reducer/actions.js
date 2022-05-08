@@ -13,7 +13,6 @@ export const getNewToken = createRequestAction('GET_NEW_TOKEN', (data)=>({
         method: 'post',
         url: '/login',
          data
-
     }
 
 }))
@@ -43,8 +42,5 @@ export const reset = createRequestAction('RESET', () => ({
     request: {
         method: 'post',
         url: '/reset',
-        // headers: {
-        //     Authorization: localStorage.getItem('token')
-        // }
     }
 }));

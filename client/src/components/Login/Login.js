@@ -15,11 +15,11 @@ const Login = ({getNewToken, token}) => {
     const [players, setPlayers] = useState([])
 
     const startGame = () => {
-        let playersArr = [...players, player1, player2]
+        let playersArr = [ player1, player2, ...players]
         getNewToken(playersArr);
     }
 
-    const changeName = (id, value) => {
+    const setName = (id, value) => {
         let newPlayers = [...players];
         newPlayers[id] = value;
         setPlayers(newPlayers);
@@ -46,8 +46,7 @@ const Login = ({getNewToken, token}) => {
                 {players.map((name, index) => (
                     <div key={index}>
                         <input value={name} placeholder={'Name'}
-                               onChange={event => changeName(index, event.target.value)}
-                        />
+                               onChange={event => setName(index, event.target.value)}/>
                         <button className={"smallButton"} onClick={() => removePlayer(index)}>X</button>
                     </div>
                 ))

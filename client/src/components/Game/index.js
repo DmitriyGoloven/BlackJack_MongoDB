@@ -13,7 +13,7 @@ const mapDispatchToProps = {
     getNewGame,
     hit,
     stand,
-    reset
+    reset,
 }
 
 export default connect(mapStateToProp, mapDispatchToProps)(Game);
