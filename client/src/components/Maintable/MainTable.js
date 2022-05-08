@@ -14,8 +14,7 @@ const MainTable = ({state}) => {
                         id={player.id}
                         active={state.activePlayerId[0] === player.id[0]}
                         key={player.id}/>
-                })
-                }
+                })}
             </div>
         </div>
     );

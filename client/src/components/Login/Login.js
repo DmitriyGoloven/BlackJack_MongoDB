@@ -2,8 +2,6 @@ import React from 'react';
 import {useState} from "react";
 import {Navigate} from "react-router-dom";
 
-
-
 const Login = ({getNewToken, token}) => {
 
     if (token) {
@@ -15,7 +13,7 @@ const Login = ({getNewToken, token}) => {
     const [players, setPlayers] = useState([])
 
     const startGame = () => {
-        let playersArr = [ player1, player2, ...players]
+        let playersArr = [player1, player2, ...players]
         getNewToken(playersArr);
     }
 

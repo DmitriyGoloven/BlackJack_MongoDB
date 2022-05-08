@@ -12,7 +12,6 @@ const mapStateToProp = createStructuredSelector({
 const mapDispatchToProps = {
     getNewToken,
     getNewGame,
-
 }
 
 export default connect(mapStateToProp, mapDispatchToProps)(Login);

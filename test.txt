@@ -1,1 +1,0 @@
-mongosh "mongodb+srv://cluster0.id5tv.mongodb.net/dim" --apiVersion 1 --username DmitriyGoloven

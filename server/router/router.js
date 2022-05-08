@@ -1,10 +1,8 @@
 const Router = require("@koa/router");
 const Game = require("../MongoDB/Game");
-// const Player = require("../game/player");
 const koaBody = require("koa-body");
 const {createReadStream} = require("fs");
 const jwt = require('jsonwebtoken');
-// const {v4: uuidv4} = require('uuid');
 const {playerSchema} = require("../MongoDB/Player");
 
 const router = new Router();
@@ -39,9 +37,9 @@ const restartGameController = async (ctx) => {
     game.getPlayersAndCards(players)
     game.scoreSum()
 
-   await game.save(function (err) {
+    await game.save(function (err) {
         if (err) throw err;
-        console.log('game successfully saved.');
+        console.log('reset game successfully saved.');
     });
 
     ctx.body = game;
@@ -78,7 +76,6 @@ const checkGame = async (ctx, next) => {
     return next();
 }
 
-
 const login = (ctx) => {
     const players = ctx.request.body
 
@@ -89,8 +86,6 @@ const login = (ctx) => {
 
     const game = new Game({
         winner: {},
-        losers: [],
-        winners: [],
         players: [playerSchema],
         activePlayer: [playerSchema],
         cardDeck: []

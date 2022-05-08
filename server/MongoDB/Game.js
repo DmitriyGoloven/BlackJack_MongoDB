@@ -1,6 +1,5 @@
 
 const {playerSchema} = require("./Player");
-const {cardSchema} = require("./Card");
 const {Card} = require("./Card");
 const {Player} =require("./Player")
 
@@ -18,13 +17,10 @@ const cardsArr = [['2♦ ', 2], ['2♣ ', 2], ['2♥ ', 2], ['2♠ ', 2], ['3♦
 const gameSchema = new mongoose.Schema({
 
     winner: Object,
-    losers: [playerSchema],
-    winners: [playerSchema],
     players: [playerSchema],
     activePlayer: Array,
     cardDeck: Array
 })
-
 
 gameSchema.methods.getPlayersAndCards = function getPlayersAndCards(players) {
     let cardDeck = []
@@ -59,7 +55,6 @@ gameSchema.methods.scoreSum = function scoreSum() {
     }
 }
 
-
 gameSchema.methods.hit = async function hit() {
     let hitPlayer = this.players[this.activePlayer]
     hitPlayer.cards.push(this.cardDeck.shift())
@@ -73,14 +68,12 @@ gameSchema.methods.hit = async function hit() {
     this.players[this.activePlayer] = hitPlayer
 
       if (this.players[this.activePlayer].scores > 21) {
-        // this.losers.push(hitPlayer)
         this.activePlayer[0]++
           if (this.players.length <= this.activePlayer[0] ){
               await this.checkWinner()
           }
 
     } else if (this.players[this.activePlayer].scores === 21) {
-        // this.winners.push(hitPlayer)
           this.activePlayer[0]++
           if (this.players.length <= this.activePlayer[0] ){
              await this.checkWinner()

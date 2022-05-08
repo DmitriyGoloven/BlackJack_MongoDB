@@ -1,6 +1,5 @@
-// import mongoose from "mongoose";
 const mongoose = require("mongoose")
-const {cardSchema, Card} = require("./Card")
+const {cardSchema} = require("./Card")
 
 
 const playerSchema = new mongoose.Schema({
@@ -13,15 +12,4 @@ const playerSchema = new mongoose.Schema({
 
 const Player = mongoose.model('Player', playerSchema)
 
-// const player = new Player({
-//     scores: 0,
-//     cardImg: [],
-//     name: "",
-//     cards: [cardSchema],
-//     id: []
-// })
-//
-
-
-
-module.exports = {playerSchema,Player}
+module.exports = {playerSchema, Player}

@@ -7,12 +7,11 @@ const createRequestAction = (type, payload) => {
     return action;
 }
 
-
-export const getNewToken = createRequestAction('GET_NEW_TOKEN', (data)=>({
+export const getNewToken = createRequestAction('GET_NEW_TOKEN', (data) => ({
     request: {
         method: 'post',
         url: '/login',
-         data
+        data
     }
 
 }))
