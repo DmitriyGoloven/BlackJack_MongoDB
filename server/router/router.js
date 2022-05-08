@@ -24,13 +24,27 @@ const standGameController = (ctx) => {
     ctx.body = ctx.state.game;
 }
 
-const restartGameController = (ctx) => {
-    let players = ctx.state.game.players
-    const session = ctx.state.session
-    // let game = new Game(players.map((player) => new Player(player.name)))
-    ctx.state.game = game;
-    games[session.id] = ctx.state.game;
-    ctx.body = ctx.state.game;
+const restartGameController = async (ctx) => {
+    const gamePlayers = ctx.state.game.players
+    const players = gamePlayers.map((player) => {
+        return player.name
+    })
+
+    ctx.state.game.winner = {}
+    ctx.state.game.players.length = 0
+    ctx.state.game.activePlayer.length = 0
+
+    let game = ctx.state.game
+
+    game.getPlayersAndCards(players)
+    game.scoreSum()
+
+   await game.save(function (err) {
+        if (err) throw err;
+        console.log('game successfully saved.');
+    });
+
+    ctx.body = game;
 }
 
 const checkTokenMiddleware = (ctx, next) => {
@@ -50,21 +64,19 @@ const checkTokenMiddleware = (ctx, next) => {
     return next()
 }
 
-const checkGame =async (ctx, next) => {
+const checkGame = async (ctx, next) => {
 
 
     const session = ctx.state.session;
     let game = await Game.findById(session)
-        if (!game) {
-            ctx.status = 401;
-            return;
-        }
-        ctx.state.game = game;
-
-        return next();
+    if (!game) {
+        ctx.status = 401;
+        return;
     }
+    ctx.state.game = game;
 
-
+    return next();
+}
 
 
 const login = (ctx) => {
@@ -87,10 +99,10 @@ const login = (ctx) => {
     game.getPlayersAndCards(players)
     game.scoreSum()
 
-    game.save(function(err) {
-    if (err) throw err;
-    console.log('game successfully saved.');
-});
+    game.save(function (err) {
+        if (err) throw err;
+        console.log('game successfully saved.');
+    });
     const token = jwt.sign(game.id, gameKey);
 
     ctx.body = {game, token}

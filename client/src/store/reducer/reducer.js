@@ -24,9 +24,14 @@ const getToken = (state, {payload}) => {
         token: payload.data,
     };
 }
+const resetToken = (state) => {
+    localStorage.clear();
+    return {...state, token: null}
+}
 
 export const reducer = handleActions({
     [getNewToken.success]: getToken,
+    [getNewToken.fail]: resetToken,
     [getNewGame.success]: getGameDta,
     [hit.success]: getGameDta,
     [stand.success]: getGameDta,

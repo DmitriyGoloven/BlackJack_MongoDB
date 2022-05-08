@@ -59,4 +59,63 @@ gameSchema.methods.scoreSum = function scoreSum() {
     }
 }
 
+
+gameSchema.methods.hit = async function hit() {
+    let hitPlayer = this.players[this.activePlayer]
+    hitPlayer.cards.push(this.cardDeck.shift())
+    hitPlayer.cardImg.length = 0
+    hitPlayer.scores = 0
+    for (const card of hitPlayer.cards) {
+        hitPlayer.scores += card.count;
+        hitPlayer.cardImg.push(card.picture)
+    }
+
+    this.players[this.activePlayer] = hitPlayer
+
+      if (this.players[this.activePlayer].scores > 21) {
+        // this.losers.push(hitPlayer)
+        this.activePlayer[0]++
+          if (this.players.length <= this.activePlayer[0] ){
+              await this.checkWinner()
+          }
+
+    } else if (this.players[this.activePlayer].scores === 21) {
+        // this.winners.push(hitPlayer)
+          this.activePlayer[0]++
+          if (this.players.length <= this.activePlayer[0] ){
+             await this.checkWinner()
+          }
+    }
+     this.save()
+
+}
+
+gameSchema.methods.stand = async function stand(){
+    this.activePlayer[0]++
+   if (this.players.length <= this.activePlayer[0] ){
+
+       await this.checkWinner()
+   }
+  this.save()
+}
+
+gameSchema.methods.checkWinner = async function checkWinner(){
+
+    let winners = this.players.filter(player => player.scores <= 21)
+    if (winners.length === 0) {
+        this.winner = { name: "NO WINNER", scores: "0"}
+    } else {
+        let scoreWinners = winners.map((player) => {
+            return player.scores
+        })
+
+        let winner = scoreWinners.indexOf(Math.max(...scoreWinners))
+        this.winner = { name: winners[winner].name, scores: winners[winner].scores};
+    }
+
+
+
+     await this.save()
+}
+
 module.exports = mongoose.model('Game', gameSchema)

@@ -3,6 +3,7 @@ import {createAction} from "redux-actions"
 const createRequestAction = (type, payload) => {
     const action = createAction(type, payload);
     action.success = type + '_SUCCESS';
+    action.fail = type + '_FAIL';
     return action;
 }
 
