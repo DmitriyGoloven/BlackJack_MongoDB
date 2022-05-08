@@ -11,7 +11,7 @@ const getGameDta = (state, {payload}) => {
     return {
         ...state,
         players: players,
-        activePlayerId: activePlayer.id,
+        activePlayerId: activePlayer,
         winner: winner
     }
 }

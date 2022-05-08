@@ -1,5 +1,5 @@
 
-module.exports = class Player {
+class Player {
     scores = 0;
     cardImg = []
 
@@ -28,3 +28,4 @@ module.exports = class Player {
     }
 }
 
+// module.exports = {Player}

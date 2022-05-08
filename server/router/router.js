@@ -1,22 +1,20 @@
 const Router = require("@koa/router");
-const Game = require("../game/game");
-const Player = require("../game/player");
+const Game = require("../MongoDB/Game");
+// const Player = require("../game/player");
 const koaBody = require("koa-body");
 const {createReadStream} = require("fs");
 const jwt = require('jsonwebtoken');
-const {v4: uuidv4} = require('uuid');
+// const {v4: uuidv4} = require('uuid');
+const {playerSchema} = require("../MongoDB/Player");
 
 const router = new Router();
-
-const games = {}
+const gameKey = "mySecretKey"
 
 const getGameController = (ctx) => {
-
     ctx.body = ctx.state.game;
 }
 
 const hitGameController = (ctx) => {
-    // console.log(ctx.state.game)
     ctx.state.game.hit();
     ctx.body = ctx.state.game;
 }
@@ -29,21 +27,20 @@ const standGameController = (ctx) => {
 const restartGameController = (ctx) => {
     let players = ctx.state.game.players
     const session = ctx.state.session
-    let game = new Game(players.map((player) => new Player(player.name)))
+    // let game = new Game(players.map((player) => new Player(player.name)))
     ctx.state.game = game;
     games[session.id] = ctx.state.game;
     ctx.body = ctx.state.game;
 }
 
 const checkTokenMiddleware = (ctx, next) => {
-    // console.log(ctx.headers)
     const token = ctx.header.authorization
 
     if (!token) {
         ctx.status = 401
         return
     }
-    const session = jwt.verify(token, 'MyGame')
+    const session = jwt.verify(token, gameKey)
 
     if (!session) {
         ctx.status = 401
@@ -53,19 +50,21 @@ const checkTokenMiddleware = (ctx, next) => {
     return next()
 }
 
-const checkGame =
-    (ctx, next) => {
+const checkGame =async (ctx, next) => {
 
-        const session = ctx.state.session
 
-        if (!games[session.id]) {
+    const session = ctx.state.session;
+    let game = await Game.findById(session)
+        if (!game) {
             ctx.status = 401;
             return;
         }
-        ctx.state.game = games[session.id];
+        ctx.state.game = game;
 
         return next();
     }
+
+
 
 
 const login = (ctx) => {
@@ -76,11 +75,23 @@ const login = (ctx) => {
         return
     }
 
-    const session = {id: uuidv4()};
-    const token = jwt.sign(session, 'MyGame');
-    const game = new Game(players.map((name) => new Player(name)))
+    const game = new Game({
+        winner: {},
+        losers: [],
+        winners: [],
+        players: [playerSchema],
+        activePlayer: [playerSchema],
+        cardDeck: []
+    })
 
-    games[session.id] = game
+    game.getPlayersAndCards(players)
+    game.scoreSum()
+
+    game.save(function(err) {
+    if (err) throw err;
+    console.log('game successfully saved.');
+});
+    const token = jwt.sign(game.id, gameKey);
 
     ctx.body = {game, token}
 }

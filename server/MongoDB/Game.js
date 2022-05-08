@@ -1,7 +1,3 @@
-// import mongoose from "mongoose";
-// import {playerSchema} from "./Player";
-// import {cardSchema} from "./Card";
-// import {Card} from "./Card"
 
 const {playerSchema} = require("./Player");
 const {cardSchema} = require("./Card");
@@ -18,61 +14,49 @@ const cardsArr = [['2♦ ', 2], ['2♣ ', 2], ['2♥ ', 2], ['2♠ ', 2], ['3♦
     ['Q♦ ', 10], ['Q♣ ', 10], ['Q♥ ', 10], ['Q♠ ', 10], ['K♦ ', 10], ['K♣ ', 10], ['K♥ ', 10], ['K♠ ', 10],
     ['A♦ ', 10], ['A♣ ', 10], ['A♥ ', 10], ['A♠ ', 10]]
 
-const gamePlayers = ["Vova", "Dima"]
 
 const gameSchema = new mongoose.Schema({
 
-    winner: playerSchema,
+    winner: Object,
     losers: [playerSchema],
     winners: [playerSchema],
     players: [playerSchema],
-    activePlayer: playerSchema,
-    cardDeck: [cardSchema]
+    activePlayer: Array,
+    cardDeck: Array
 })
 
-gameSchema.methods.shuffle = function shuffle() {
+
+gameSchema.methods.getPlayersAndCards = function getPlayersAndCards(players) {
     let cardDeck = []
     cardsArr.sort(() => Math.random() - 0.5)
 
     for (let i = 0; i < cardsArr.length; i++) {
         cardDeck.push(new Card({picture: cardsArr[i][0], count: cardsArr[i][1]}))
-        // this.cardDeck.push(new Card({picture:cardsArr[i][0],count: cardsArr[i][1]}))
         this.cardDeck = cardDeck
+
     }
-
-};
-
-gameSchema.methods.getPlayers = function getPlayers() {
     let playersArr = []
-    gamePlayers.map((name) => {
+    players.map((name,index) => {
         playersArr.push(new Player({
                 scores: 0,
                 cardImg: [],
                 name: name,
-                cards: [cardSchema],
-                id: []
+                cards: [this.cardDeck.shift(),this.cardDeck.shift()],
+                id: index
             }),
         )
     })
     this.players = playersArr
+    this.activePlayer= [0]
 }
 
+gameSchema.methods.scoreSum = function scoreSum() {
+    for (let i = 0; i < this.players.length; i++) {
+        for (const card of this.players[i].cards) {
+            this.players[i].scores += card.count;
+            this.players[i].cardImg.push(card.picture)
+        }
+    }
+}
 
-
-
-
-const Game = mongoose.model('Game', gameSchema)
-
-const game = new Game({
-    winner: [playerSchema],
-    losers: [playerSchema],
-    winners: [playerSchema],
-    players: [playerSchema],
-    activePlayer: [playerSchema],
-    cardDeck: [cardSchema]
-})
-game.shuffle()
-game.getPlayers()
-console.log(game)
-
-
+module.exports = mongoose.model('Game', gameSchema)

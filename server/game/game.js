@@ -1,5 +1,5 @@
-const Card = require("./card")
-const Player = require("./player")
+// const Card = require("./card")
+// const Player = require("./player")
 
 class Game {
     winner = null
@@ -70,7 +70,7 @@ class Game {
     }
 }
 
-module.exports = Game
+// module.exports = Game
 
 
 
