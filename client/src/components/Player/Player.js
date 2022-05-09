@@ -2,7 +2,6 @@ import React from 'react';
 
 
 const Player = ({name, scores, cardImg, active}) => {
-
     return (
         <div>
             <p>{name}</p>

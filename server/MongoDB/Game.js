@@ -17,12 +17,12 @@ const cardsArr = [['2♦ ', 2], ['2♣ ', 2], ['2♥ ', 2], ['2♠ ', 2], ['3♦
 const gameSchema = new mongoose.Schema({
 
     winner: Object,
-    players: [playerSchema],
+    players: Array,
     activePlayer: Array,
     cardDeck: Array
 })
 
-gameSchema.methods.getPlayersAndCards = function getPlayersAndCards(players) {
+gameSchema.methods.start = function start() {
     let cardDeck = []
     cardsArr.sort(() => Math.random() - 0.5)
 
@@ -31,28 +31,22 @@ gameSchema.methods.getPlayersAndCards = function getPlayersAndCards(players) {
         this.cardDeck = cardDeck
 
     }
-    let playersArr = []
-    players.map((name,index) => {
-        playersArr.push(new Player({
-                scores: 0,
-                cardImg: [],
-                name: name,
-                cards: [this.cardDeck.shift(),this.cardDeck.shift()],
-                id: index
-            }),
-        )
+    this.players.map((player)=>{
+        player.cards.push(this.cardDeck.shift(),this.cardDeck.shift())
     })
-    this.players = playersArr
-    this.activePlayer= [0]
-}
 
-gameSchema.methods.scoreSum = function scoreSum() {
     for (let i = 0; i < this.players.length; i++) {
         for (const card of this.players[i].cards) {
             this.players[i].scores += card.count;
             this.players[i].cardImg.push(card.picture)
         }
     }
+    this.activePlayer = [0]
+
+    this.save(function (err) {
+        if (err) throw err;
+        console.log('game successfully saved.');
+    });
 }
 
 gameSchema.methods.hit = async function hit() {

@@ -3,7 +3,7 @@ const Game = require("../MongoDB/Game");
 const koaBody = require("koa-body");
 const {createReadStream} = require("fs");
 const jwt = require('jsonwebtoken');
-const {playerSchema} = require("../MongoDB/Player");
+const {Player} = require("../MongoDB/Player");
 
 const router = new Router();
 const gameKey = "mySecretKey"
@@ -23,26 +23,25 @@ const standGameController = (ctx) => {
 }
 
 const restartGameController = async (ctx) => {
-    const gamePlayers = ctx.state.game.players
-    const players = gamePlayers.map((player) => {
+
+    let game = ctx.state.game;
+    let players = ctx.state.game.players.map((player) => {
         return player.name
-    })
-
-    ctx.state.game.winner = {}
-    ctx.state.game.players.length = 0
-    ctx.state.game.activePlayer.length = 0
-
-    let game = ctx.state.game
-
-    game.getPlayersAndCards(players)
-    game.scoreSum()
-
-    await game.save(function (err) {
-        if (err) throw err;
-        console.log('reset game successfully saved.');
     });
 
+    game.players = players.map((Name, index) => ({
+        scores: 0,
+        cardImg: [],
+        name: Name,
+        cards: [],
+        id: index
+    }))
+    game.winner = {}
+    game.activePlayer = []
+    game.cardDeck = []
+    game.start()
     ctx.body = game;
+
 }
 
 const checkTokenMiddleware = (ctx, next) => {
@@ -64,15 +63,14 @@ const checkTokenMiddleware = (ctx, next) => {
 
 const checkGame = async (ctx, next) => {
 
-
     const session = ctx.state.session;
     let game = await Game.findById(session)
+
     if (!game) {
         ctx.status = 401;
         return;
     }
     ctx.state.game = game;
-
     return next();
 }
 
@@ -83,21 +81,26 @@ const login = (ctx) => {
         ctx.status = 422;
         return
     }
+    let playersArr = []
+    players.map((name, index) => {
+        playersArr.push(new Player({
+                scores: 0,
+                cardImg: [],
+                name: name,
+                cards: [],
+                id: index
+            }),
+        )
+    })
 
     const game = new Game({
         winner: {},
-        players: [playerSchema],
-        activePlayer: [playerSchema],
+        players: playersArr,
+        activePlayer: [],
         cardDeck: []
     })
 
-    game.getPlayersAndCards(players)
-    game.scoreSum()
-
-    game.save(function (err) {
-        if (err) throw err;
-        console.log('game successfully saved.');
-    });
+    game.start()
     const token = jwt.sign(game.id, gameKey);
 
     ctx.body = {game, token}

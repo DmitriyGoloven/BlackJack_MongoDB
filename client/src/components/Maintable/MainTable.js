@@ -2,6 +2,7 @@ import React from 'react';
 import Player from "../Player/Player"
 
 const MainTable = ({state}) => {
+
     return (
         <div className={"mainTable"}>
             <h1>Black Jack</h1>
